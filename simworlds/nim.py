@@ -1,12 +1,8 @@
+from matplotlib.patches import Rectangle
 from simworlds.simworld import SimWorld
 
 
 class Nim(SimWorld):
-
-    start_player_turn = True
-    player_turn = True
-    start_pieces = 100
-    pieces = 100
 
     def __init__(self, start_pieces, max_move, start_player):
         self.start_pieces = start_pieces
@@ -40,11 +36,8 @@ class Nim(SimWorld):
             return 0
         # return -1 if self.player_turn else 1 if self.is_final_state() else 0
     
-    def get_current_state(self):
-        return (self.pieces, self.player_turn)
-    
     def get_current_encoded_state(self):
-        return self.get_current_state()
+        return (self.pieces, self.player_turn)
     
     def get_encoding_shape(self):
         return (2, )
@@ -52,9 +45,15 @@ class Nim(SimWorld):
     def get_current_player(self):
         return self.player_turn
 
-    def set_current_state(self, state, player):
-        self.pieces = state[0]
+    def set_current_state(self, encoded_state, player):
+        self.pieces = encoded_state[0]
         self.player_turn = player
     
     def set_current_player(self, player_turn):
         self.player_turn = player_turn
+
+    def visualize_state(self, ax):
+        ax.set(ylim=[0, 1], xlim=[0, self.start_pieces + 1])
+        for i in range(1, self.pieces + 1):
+            rect = Rectangle((i, 0.25), 0.8, 0.5, color="black")
+            ax.add_patch(rect)

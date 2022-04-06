@@ -1,0 +1,26 @@
+{
+    "simworld": "nim",
+    "learning_rate": 0.05,
+    "dimensions": [32, 32],
+    "activation": "softmax",
+    "optimizer": "SGD",
+    "search_games": 500,
+    "episodes": 10,
+    "train_enabled": true,
+    "train_visualize": true,
+    "TOPP_players": 4,
+    "TOPP_games": 8,
+    "TOPP_restore_players": false,
+    "TOPP_enabled": true,
+    "TOPP_visualize": true,
+    "frame_delay": 0.25,
+    "simworld_params":{
+        "nim": {
+            "start": 11,
+            "max_move": 4
+        },
+        "hex": {
+            "board_size": 4
+        }
+    }
+}
