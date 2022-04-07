@@ -105,18 +105,18 @@ class TOPP:
 
     def save_scores(self, scores):
         # Create file if it doesn't exist
-            f = open(f'./topp/{self.train_time}/results.json', 'a+')
-            f.close()
+        f = open(f'./topp/{self.train_time}/results.json', 'a+')
+        f.close()
 
-            # Read the existing results and append the list and overwrite with the new results
-            with open(f'./topp/{self.train_time}/results.json', 'r+') as f:
-                score_list = []
-                try:
-                    data = json.load(f)
-                    score_list.extend(data)
-                except json.decoder.JSONDecodeError:
-                    pass
-                score_list.append(scores)
-                f.seek(0)
-                json.dump(score_list, f, indent=4)
-                f.truncate()
+        # Read the existing results and append the list and overwrite with the new results
+        with open(f'./topp/{self.train_time}/results.json', 'r+') as f:
+            score_list = []
+            try:
+                data = json.load(f)
+                score_list.extend(data)
+            except json.decoder.JSONDecodeError:
+                pass
+            score_list.append(scores)
+            f.seek(0)
+            json.dump(score_list, f, indent=4)
+            f.truncate()

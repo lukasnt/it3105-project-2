@@ -32,13 +32,18 @@ class RLSystem:
                 self.visualizer.visualize_state()
                 for search_game_num in range(search_games):
                     mcts.run_search_game(self.actor, self.epsilon)
+                prev_root = root
                 root, dist = mcts.move_next_root()
-                self.replay_buffer.append((root.state, dist))
+                self.replay_buffer.append((prev_root.state, dist))
                 self.sim_world.set_current_state(root.state, root.player)
             self.visualizer.visualize_final_state()
+            self.filter_replay_buffer(1 if self.sim_world.get_reward() == 1 else 0)
             self.actor.anet.train_anet(self.replay_buffer)
             self.epsilon -= self.epsilon_decay
-        
+
+    def filter_replay_buffer(self, winner):
+        self.replay_buffer = list(filter(lambda b: b[0][len(b[0]) - 1] == winner, self.replay_buffer))
+        print(self.replay_buffer)   
 
     def reset_episode_data(self):
         self.replay_buffer = []

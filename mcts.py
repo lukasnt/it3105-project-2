@@ -109,7 +109,7 @@ class MonteCarloTreeSearch:
             if child_node:
                 prev_eval = self.tree_policy.get((node.state, child_node.prev_action), 0) * (self.node_visits.get(node.state, 0) - 1)
                 self.edge_visits[node.state, child_node.prev_action] = self.edge_visits.get((node.state, child_node.prev_action), 0) + 1
-                self.tree_policy[node.state, child_node.prev_action] = (prev_eval + reward) / self.node_visits.get(node.state, 0)
+                self.tree_policy[node.state, child_node.prev_action] = (prev_eval + reward) / self.node_visits.get(node.state, 0) # (reward - self.tree_policy.get((node.state, child_node.prev_action), 0)) / (self.node_visits.get(node.state, 0) + 1)
             
             # Delete this node if it is a rollout node
             if node.rollout:

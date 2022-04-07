@@ -23,7 +23,7 @@ class ActorNeuralNetwork:
         layers.append(tf.keras.layers.Input(shape=self.params.input_shape))
         for dimension in self.params.dimensions:
             layers.append(tf.keras.layers.Dense(dimension, activation=self.params.activation))
-        layers.append(tf.keras.layers.Dense(len(self.params.action_space)))   
+        layers.append(tf.keras.layers.Dense(len(self.params.action_space), activation=self.params.activation))   
         self.model = tf.keras.Sequential(layers)
 
         net_optimizer = None
@@ -41,14 +41,17 @@ class ActorNeuralNetwork:
             loss=tf.losses.MeanSquaredError(),
             metrics=["accuracy"]
         )
+        self.model.summary()
 
     def get_dist(self, state):
+        # print("get_dist:", np.array(state)[None])
         return self.model(np.array(state)[None]).numpy().tolist()[0]
 
     def train_anet(self, replay_buffer):
         states = np.array(list(map(lambda b: b[0], replay_buffer)))
         dists = np.array(list(map(lambda b: b[1], replay_buffer)))
         for i in range(len(states)):
+            #print(states[i][None], dists[i][None])
             self.model.fit(states[i][None], dists[i][None])
 
     def save_anet_to_file(self, filepath):

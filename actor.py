@@ -3,7 +3,6 @@ import random
 from anet import ANET_Parameters, ActorNeuralNetwork
 from simworlds.simworld import SimWorld
 
-
 class Actor:
 
     def __init__(self, sim_world: SimWorld, anet_params: ANET_Parameters):
@@ -15,6 +14,7 @@ class Actor:
 
         # Find best action based on ANET distribution output
         best_action = self.sim_world.get_action_space()[dist.index(max(dist))]
+        # print(state, dist, best_action)
 
         # Use best action or random action based on epsilon value
         action = best_action
