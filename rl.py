@@ -10,12 +10,12 @@ class RLSystem:
     save_interval = 10
     replay_buffer = []
 
-    def __init__(self, sim_world: SimWorld, anet_params: ANET_Parameters, save_interval = 10, visualize=False, frame_delay=0.25):
+    def __init__(self, sim_world: SimWorld, anet_params: ANET_Parameters, epsilon=0.15, save_interval = 10, visualize=False, frame_delay=0.25):
         self.sim_world = sim_world
         self.save_interval = save_interval
         self.actor = Actor(self.sim_world, anet_params)
         self.actor.anet.init_anet()
-        self.epsilon = 0.15
+        self.epsilon = epsilon
         self.visualizer = Visualizer(self.sim_world, frame_delay=frame_delay)
         self.visualizer.set_visualize(visualize)
 
@@ -43,7 +43,7 @@ class RLSystem:
 
     def filter_replay_buffer(self, winner):
         self.replay_buffer = list(filter(lambda b: b[0][len(b[0]) - 1] == winner, self.replay_buffer))
-        print(self.replay_buffer)   
+        # print(self.replay_buffer)   
 
     def reset_episode_data(self):
         self.replay_buffer = []

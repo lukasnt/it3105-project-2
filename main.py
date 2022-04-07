@@ -21,7 +21,7 @@ elif sw_name == "hex":
     sim_world = HexGame(hex_params["board_size"])
 
 anet_params = ANET_Parameters(sim_world.get_encoding_shape(), sim_world.get_action_space(), params["dimensions"], params["learning_rate"], params["activation"], params["optimizer"])
-topp = TOPP(sim_world, params["TOPP_players"], params["TOPP_games"], params["episodes"], params["search_games"], anet_params, train_visualize=params["train_visualize"], tournament_visualize=params["TOPP_visualize"], frame_delay=params["frame_delay"])
+topp = TOPP(sim_world, params["TOPP_players"], params["TOPP_games"], params["episodes"], params["search_games"], anet_params, train_visualize=params["train_visualize"], tournament_visualize=params["TOPP_visualize"], frame_delay=params["frame_delay"], train_epsilon=params["epsilon"])
 
 if params["train_enabled"]:
     topp.train_players()

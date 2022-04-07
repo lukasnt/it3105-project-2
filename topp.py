@@ -9,14 +9,15 @@ from visualizer import Visualizer
 
 class TOPP:
 
-    def __init__(self, sim_world: SimWorld, player_count, games_count, total_episodes, search_games, anet_params: ANET_Parameters, train_visualize=False, tournament_visualize=False, frame_delay=0.25):
+    def __init__(self, sim_world: SimWorld, player_count, games_count, total_episodes, search_games, anet_params: ANET_Parameters, train_visualize=False, tournament_visualize=False, frame_delay=0.25, train_epsilon=0.15):
         self.sim_world = sim_world
         self.player_count = player_count
         self.total_episodes = total_episodes
         self.search_games = search_games
         self.games_count = games_count
+        self.train_epsilon = train_epsilon
         self.anet_params = anet_params
-        self.rl_system = RLSystem(self.sim_world, self.anet_params, visualize=train_visualize, frame_delay=frame_delay)
+        self.rl_system = RLSystem(self.sim_world, self.anet_params, epsilon=self.train_epsilon, visualize=train_visualize, frame_delay=frame_delay)
         self.players = []
         self.train_time = 0
         self.visualizer = Visualizer(self.sim_world, frame_delay=frame_delay)
