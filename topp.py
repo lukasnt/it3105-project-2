@@ -2,22 +2,24 @@ import time
 import os
 import json
 from actor import Actor
-from anet import ANET_Parameters
+from learners.anet import ActorNeuralNetwork
+from learners.dtrees import DecisionTrees
+from learners.learner import Learner
 from rl import RLSystem
 from simworlds.simworld import SimWorld
 from visualizer import Visualizer
 
 class TOPP:
 
-    def __init__(self, sim_world: SimWorld, player_count, games_count, total_episodes, search_games, anet_params: ANET_Parameters, train_visualize=False, tournament_visualize=False, frame_delay=0.25, train_epsilon=0.15):
+    def __init__(self, sim_world: SimWorld, player_count, games_count, total_episodes, search_games, learner: Learner, train_visualize=False, tournament_visualize=False, frame_delay=0.25, train_epsilon=0.15):
         self.sim_world = sim_world
         self.player_count = player_count
         self.total_episodes = total_episodes
         self.search_games = search_games
         self.games_count = games_count
         self.train_epsilon = train_epsilon
-        self.anet_params = anet_params
-        self.rl_system = RLSystem(self.sim_world, self.anet_params, epsilon=self.train_epsilon, visualize=train_visualize, frame_delay=frame_delay)
+        self.learner = learner
+        self.rl_system = RLSystem(self.sim_world, self.learner, epsilon=self.train_epsilon, visualize=train_visualize, frame_delay=frame_delay)
         self.players = []
         self.train_time = 0
         self.visualizer = Visualizer(self.sim_world, frame_delay=frame_delay)
@@ -31,7 +33,7 @@ class TOPP:
             player_episodes = i * train_count
             if i:
                 self.rl_system.run_episodes(train_count, self.search_games)
-            self.rl_system.actor.save_anet(f"./topp/{self.train_time}/{player_episodes}.h5")
+            self.rl_system.actor.save_learner(f"./topp/{self.train_time}/{player_episodes}")
         
     def save_params(self, params):
         with open(f"./topp/{self.train_time}/params.json", 'w') as f:
@@ -39,15 +41,22 @@ class TOPP:
 
     def restore_trained_players(self, train_time):
         path = os.walk(f"./topp/{train_time}")
-        for root, directories, files in path:
-            for file in files:
-                if file.endswith(".h5"):
-                    new_player = Actor(self.sim_world, self.anet_params)
-                    print(root, file)
-                    new_player.load_anet(f"{root}/{file}")
-                    self.players.append((file, new_player))
+        for root, dirs, files in path:
+            for dir in dirs:
+                new_learner = self.new_learner()
+                new_player = Actor(self.sim_world, new_learner)
+                print(root, dir)
+                new_player.load_learner(f"{root}/{dir}")
+                self.players.append((dir, new_player))
         self.train_time = train_time
 
+    def new_learner(self) -> Learner:
+        new_learner = Learner()
+        if isinstance(self.learner, ActorNeuralNetwork):
+            new_learner = ActorNeuralNetwork(self.learner.params)
+        if isinstance(self.learner, DecisionTrees):
+            new_learner = DecisionTrees(self.learner.params)
+        return new_learner
 
     def play_tournament(self, save_results=True):
         # Decide if we need to restore players

@@ -1,5 +1,7 @@
 import json
-from anet import ANET_Parameters
+from learners.anet import ANET_Parameters, ActorNeuralNetwork
+from learners.dtrees import DecisionTrees, DecisionTreesParams
+from learners.learner import Learner
 from rl import RLSystem
 from simworlds.hex import HexGame
 from simworlds.nim import Nim
@@ -20,8 +22,18 @@ elif sw_name == "hex":
     hex_params = sw_params["hex"]
     sim_world = HexGame(hex_params["board_size"])
 
-anet_params = ANET_Parameters(sim_world.get_encoding_shape(), sim_world.get_action_space(), params["dimensions"], params["learning_rate"], params["activation"], params["optimizer"])
-topp = TOPP(sim_world, params["TOPP_players"], params["TOPP_games"], params["episodes"], params["search_games"], anet_params, train_visualize=params["train_visualize"], tournament_visualize=params["TOPP_visualize"], frame_delay=params["frame_delay"], train_epsilon=params["epsilon"])
+learner = Learner()
+learner_name = params["learner"]
+learner_params = params["learner_params"]
+if learner_name == "anet":
+    anet_params = learner_params["anet"]
+    anet_params = ANET_Parameters(sim_world.get_encoding_shape(), sim_world.get_action_space(), anet_params["dimensions"], anet_params["learning_rate"], anet_params["activation"], anet_params["optimizer"])
+    learner = ActorNeuralNetwork(anet_params)
+elif learner_name == "dtrees":
+    dtrees_params = DecisionTreesParams(len(sim_world.get_action_space()))
+    learner = DecisionTrees(dtrees_params)
+
+topp = TOPP(sim_world, params["TOPP_players"], params["TOPP_games"], params["episodes"], params["search_games"], learner, train_visualize=params["train_visualize"], tournament_visualize=params["TOPP_visualize"], frame_delay=params["frame_delay"], train_epsilon=params["epsilon"])
 
 if params["train_enabled"]:
     topp.train_players()

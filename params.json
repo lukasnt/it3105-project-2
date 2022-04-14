@@ -1,20 +1,28 @@
 {
     "simworld": "hex",
-    "learning_rate": 0.01,
-    "dimensions": [256, 128],
-    "activation": "softmax",
-    "optimizer": "Adam",
+    "learner": "dtrees",
     "epsilon": 0.15,
-    "search_games": 300,
-    "episodes": 200,
+    "search_games": 200,
+    "episodes": 20,
     "train_enabled": false,
     "train_visualize": true,
     "TOPP_players": 4,
-    "TOPP_games": 2,
-    "TOPP_restore_players": 1649324954,
+    "TOPP_games": 20,
+    "TOPP_restore_players": 1649952087,
     "TOPP_enabled": true,
-    "TOPP_visualize": true,
+    "TOPP_visualize": false,
     "frame_delay": 0.25,
+    "learner_params": {
+        "anet": {
+            "learning_rate": 0.01,
+            "dimensions": [16, 8],
+            "activation": "relu",
+            "optimizer": "Adam"
+        },
+        "dtrees": {
+
+        }
+    },
     "simworld_params":{
         "nim": {
             "start": 11,

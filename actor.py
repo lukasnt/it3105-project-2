@@ -1,16 +1,16 @@
 
 import random
-from anet import ANET_Parameters, ActorNeuralNetwork
+from learners.learner import Learner
 from simworlds.simworld import SimWorld
 
 class Actor:
 
-    def __init__(self, sim_world: SimWorld, anet_params: ANET_Parameters):
+    def __init__(self, sim_world: SimWorld, learner: Learner):
         self.sim_world = sim_world
-        self.anet = ActorNeuralNetwork(anet_params)
+        self.learner = learner
 
     def get_action(self, state, epsilon):
-        dist = self.anet.get_dist(state)
+        dist = self.learner.get_dist(state)
 
         # Set all actions that are illegal to 0
         legal_actions = self.sim_world.get_legal_actions()
@@ -30,14 +30,14 @@ class Actor:
             action = legal_actions[random.randint(0, len(legal_actions) - 1)]
         return action
 
-    def init_anet(self):
-        self.anet.init_anet()
+    def init_learner(self):
+        self.learner.init_model()
 
-    def train_anet(self, replay_buffer):
-        self.anet.train_anet(replay_buffer)
+    def train_learner(self, replay_buffer):
+        self.learner.train_model(replay_buffer)
 
-    def load_anet(self, filepath):
-        self.anet.load_anet_from_file(filepath)
+    def load_learner(self, filepath):
+        self.learner.load_model_from_file(filepath)
     
-    def save_anet(self, filepath):
-        self.anet.save_anet_to_file(filepath)
+    def save_learner(self, filepath):
+        self.learner.save_model_to_file(filepath)
