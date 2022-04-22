@@ -2,7 +2,6 @@
 from math import log, sqrt
 import math
 import numpy as np
-from actor import Actor
 
 from simworlds.simworld import SimWorld
 from tree_node import TreeNode
@@ -15,9 +14,11 @@ class MonteCarloTreeSearch:
         self.node_visits = {}
         self.edge_visits = {}
         self.tree_policy = {}
+        self.nodes = {}
         self.root = TreeNode(self.sim_world.get_current_encoded_state(), self.sim_world.get_current_player(), None, None)
+        self.nodes[self.root.state] = self.root
 
-    def run_search_game(self, actor: Actor, epsilon):
+    def run_search_game(self, actor, epsilon):
         self.sim_world.set_current_state(self.root.state, self.root.player)
         leaf_node = self.tree_search(self.root)
         self.node_expansion(leaf_node)
@@ -36,8 +37,14 @@ class MonteCarloTreeSearch:
     def get_root(self):
         return self.root
 
+    def manual_set_root(self, state):
+        try:
+            self.root = self.nodes[state]
+        except KeyError:
+            self.root = TreeNode(state, bool(state[len(state) - 1]), None, None)
+
     def exploration_bonus(self, state, to_state, action):
-        if self.node_visits.get(to_state, 0) == 0:
+        if self.node_visits.get(to_state, 0) == 0 or self.node_visits.get(to_state, 0) == 1:
             return math.inf
         c = 1
         return c * sqrt(log(self.node_visits.get(to_state, 0)) / (1 + self.edge_visits.get((state, action), 0)))
@@ -78,10 +85,12 @@ class MonteCarloTreeSearch:
             state = self.sim_world.get_current_encoded_state()
             player = self.sim_world.get_current_player()
             new_node = TreeNode(state, player, node, action)
+            if state not in self.nodes.keys():
+                self.nodes[state] = new_node
             node.add_child(new_node)
 
 
-    def leaf_evaluation(self, leaf_node: TreeNode, actor: Actor, epsilon = 0):
+    def leaf_evaluation(self, leaf_node: TreeNode, actor, epsilon = 0):
         node = leaf_node
         self.sim_world.set_current_state(node.state, node.player)
 

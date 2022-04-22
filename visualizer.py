@@ -13,15 +13,16 @@ class Visualizer:
     def set_visualize(self, value: bool):
         self.visualize = value
 
-    def init_visualize_episode(self):
+    def init_visualize_episode(self, title="Game"):
         if self.visualize:
             self.fig, self.ax = plt.subplots()
+            self.fig.canvas.set_window_title(title)
 
-    def visualize_state(self, frame_delay=0.25):
+    def visualize_state(self, frame_delay=None):
         if self.visualize:
             self.ax.clear()
             self.sim_world.visualize_state(self.ax)
-            plt.pause(frame_delay)
+            plt.pause(frame_delay if frame_delay else self.frame_delay)
             plt.show(block=False)
     
     def visualize_final_state(self):

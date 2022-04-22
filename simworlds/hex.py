@@ -52,11 +52,15 @@ class HexGame(SimWorld):
     def __init__(self, size):
         self.size = size
         self.board = None
-        self.player_turn = True
+        self.start_player = True
+        self.player_turn = self.start_player # True = "BLACK", False = "RED"
+        self.produce_init_state()
 
+    def set_start_player(self, start_player):
+        self.start_player = start_player
 
     def produce_init_state(self):
-        self.player_turn = True
+        self.player_turn = self.start_player
         self.board = HexBoard(self.size)
 
     def get_action_space(self):
@@ -92,6 +96,28 @@ class HexGame(SimWorld):
                     queue.put(next_node)
                     visited.add(next_node)
         return False
+
+    def bfs_tree_neighbors(self, start_node, node_type):
+        visited = set([])
+        queue = Queue()
+        result = set([])
+        if self.board.get_cell(start_node[0], start_node[1]) == node_type:
+            queue.put(start_node)
+            visited.add(start_node)
+        while not queue.empty():
+            node = queue.get()
+            neighbors = self.board.get_neighbors(node[0], node[1])
+            for next_node in neighbors:
+                if self.board.get_cell(next_node[0], next_node[1]) == node_type and next_node not in visited:
+                    queue.put(next_node)
+                    visited.add(next_node)
+                elif self.board.get_cell(next_node[0], next_node[1]) == (0, 0) and not next_node in result:
+                    result.add(next_node)
+        return list(result)
+
+
+    def get_neighbors(self, row, column):
+        return self.board.get_neighbors(row, column)
 
     def is_team_winning(self, row_team):
         start_nodes = [(i, 0)             for i in range(self.size)] if row_team else [(0, j)             for j in range(self.size)]
@@ -130,14 +156,15 @@ class HexGame(SimWorld):
             for j in range(self.size):
                 cell = self.board.get_cell(i, j)
                 neighbors = self.board.get_neighbors(i, j)
-                point = self.rotate(center_point, (j, i), math.pi / 4)
+                rot_angle = -math.pi / 4
+                point = self.rotate(center_point, (j, self.size - i), rot_angle)
                 for n_pos in neighbors:
                     # Rotate points
-                    n_coord = self.rotate(center_point, (n_pos[1], n_pos[0]), math.pi / 4)
+                    n_coord = self.rotate(center_point, (n_pos[1], self.size - n_pos[0]), rot_angle)
                     # Draw Line
                     ax.plot([point[0], n_coord[0]], [point[1], n_coord[1]], color = 'blue', linewidth = 3 - (self.size - 3) * 0.2, linestyle='solid')  
                 # Draw Node based on cell type
-                color = "r" if cell == (1, 0) else "black" if cell == (0, 1) else "blue"
+                color = "r" if cell == (0, 1) else "black" if cell == (1, 0) else "blue"
                 circle = plt.Circle(point, 0.2 - (self.size - 3) * 0.01, color=color, fill=not cell==(0, 0))
                 ax.add_patch(circle)
         

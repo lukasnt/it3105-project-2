@@ -1,17 +1,25 @@
 {
     "simworld": "hex",
     "learner": "dtrees",
-    "epsilon": 0.15,
-    "search_games": 200,
-    "episodes": 20,
+    "epsilon": 0.10,
+    "search_games": 150,
+    "episodes": 100,
     "train_enabled": false,
     "train_visualize": true,
-    "TOPP_players": 4,
-    "TOPP_games": 20,
-    "TOPP_restore_players": 1649952087,
-    "TOPP_enabled": true,
-    "TOPP_visualize": false,
-    "frame_delay": 0.25,
+    "train_opponent": "0",
+    "TOPP_players": 2,
+    "TOPP_games": 4,
+    "TOPP_search_games": 30,
+    "TOPP_search_game_delay": 39,
+    "TOPP_restore_players": 1650121337,
+    "TOPP_enabled": false,
+    "TOPP_visualize": true,
+    "frame_delay": 0.5,
+    "OHT_mode": "qualifiers",
+    "OHT_qualify": true,
+    "OHT_actor": "164",
+    "OHT_visualize": false,
+    "OHT_auth": "43c690a8fed8456f80cf72c0625d6e88",
     "learner_params": {
         "anet": {
             "learning_rate": 0.01,
@@ -29,7 +37,7 @@
             "max_move": 4
         },
         "hex": {
-            "board_size": 4
+            "board_size": 7
         }
     }
 }

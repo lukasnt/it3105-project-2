@@ -1,4 +1,5 @@
 import json
+from client import MyClient
 from learners.anet import ANET_Parameters, ActorNeuralNetwork
 from learners.dtrees import DecisionTrees, DecisionTreesParams
 from learners.learner import Learner
@@ -33,7 +34,11 @@ elif learner_name == "dtrees":
     dtrees_params = DecisionTreesParams(len(sim_world.get_action_space()))
     learner = DecisionTrees(dtrees_params)
 
-topp = TOPP(sim_world, params["TOPP_players"], params["TOPP_games"], params["episodes"], params["search_games"], learner, train_visualize=params["train_visualize"], tournament_visualize=params["TOPP_visualize"], frame_delay=params["frame_delay"], train_epsilon=params["epsilon"])
+topp = TOPP(sim_world, params["TOPP_players"], params["TOPP_games"], params["episodes"], params["search_games"], params["TOPP_search_games"], params["TOPP_search_game_delay"], learner, train_visualize=params["train_visualize"], tournament_visualize=params["TOPP_visualize"], frame_delay=params["frame_delay"], train_epsilon=params["epsilon"])
+
+
+if params["train_enabled"] and params["TOPP_restore_players"]:
+    topp.restore_rl_trainer(params["TOPP_restore_players"], train_opponent=params["train_opponent"])
 
 if params["train_enabled"]:
     topp.train_players()
@@ -45,6 +50,14 @@ if params["TOPP_restore_players"]:
 
 if params["TOPP_enabled"]:
     topp.play_tournament()
+
+oht_mode = params["OHT_mode"]
+if oht_mode:
+    topp_id = params["TOPP_restore_players"]
+    actor = topp.restore_actor_from_dir(f"./topp/{topp_id}", params["OHT_actor"])
+    client = MyClient(actor, auth=params["OHT_auth"], qualify=params["OHT_qualify"], visualize=params["OHT_visualize"], search_games=params["TOPP_search_games"], search_games_delay=params["TOPP_search_game_delay"])
+    client.run(mode=params["OHT_mode"])
+
 
 
 # rl = RLSystem(sim_world)
